@@ -5,28 +5,17 @@ FRAMEWORK = -framework GLUT
 FRAMEWORK += -framework OpenGL
 LIBRARIES = -lGL -lGLU -lstdc++
 
-all: spinningcube
+all: simpleexample
 
-spinningcube: spinningcube.o
+simpleexample: simpleexample.o
 	$(CC) $(FRAMEWORK) $(CFLAGS) -o $@ $(LIBPATH) $(OBJECTS) $<
 
-spinningcube.o: spinningcube.c
+simpleexample.o: simpleexample.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -f spinningcube spinningcube.o
+	rm -f simpleexample simpleexample.o
 
 # This is GNU Makefile extension to notify that roughly means: 'clean' does
 # not depend on any files in order to call it.
 .PHONY: clean
-
-
-#OBJECTS = GlutExample.o 
-#All: GlutExample 
-
-#GlutExample: GlutExample.o $(OBJECTS) 
-    #$(CC) $(FRAMEWORK) $(CFLAGS) -o $@ $(LIBPATH) $(OBJECTS)
-
-#$(LIBRARIES) 
-       #./GlutExample
-
