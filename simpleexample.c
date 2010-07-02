@@ -16,7 +16,7 @@ point v[4] ={{0.0, 0.0, 1.0},
 
 void DrawGLScene(void);
 void ChangeSize(GLsizei w, GLsizei h);
-void drawCircles(void);
+void drawSquareTunnel(void);
 void tetrahedron(void);
 void triangle(point a, point b, point c);
 
@@ -44,22 +44,19 @@ void DrawGLScene(void)
 
   glTranslatef(0.0f, 0.0f, -100.0f);
 
-  drawCircles(); 
+  drawSquareTunnel(); 
   
   glutSwapBuffers();
 }
 
 void ChangeSize(GLsizei w, GLsizei h)
 {
-  GLfloat nRange = 100.0f;
-
+  GLfloat nRange = 120.0f;
   // Prevent a divide by zero
   if(h == 0)
     h = 1;
 
-  // Change the viewport each time the window is resized
-  // otherwise the image can be distorted.
-  // You do not have to match the window size - that's just simple.
+  // Set Viewport to window dimensions
   glViewport(0, 0, w, h);
 
   // Reset coordinate system
@@ -72,19 +69,154 @@ void ChangeSize(GLsizei w, GLsizei h)
   else 
     glOrtho (-nRange*w/h, nRange*w/h, -nRange, nRange, -nRange*2.0f, nRange*2.0f);
 
-  //gluPerspective(60.0f, w/h, 1.0, 400.0);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 }
 
-void drawCircles(void)
+void drawSquareTunnel(void)
 {
-  glColor3ub(255, 0, 0);
-  glutSolidSphere(10.0f, 15, 15);
-  glPushMatrix();
+  float fZ,bZ;
 
-  glTranslatef(20.0f, 0.0f, -40.0f);
-  glColor3ub(255, 255, 0);
-  glutSolidSphere(10.0f, 15, 15);
+  // Clear the window with current clearing color
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  fZ = 100.0f;
+  bZ = -100.0f;
+
+  glTranslatef(0.0f, 0.0f, -100.0f);
+
+  // Save the matrix state and do the rotations
+  glPushMatrix();
+  
+  glRotatef(10.0f, 0.0f, 0.0f, 1.0f);
+  glRotatef(10.0f, 0.0f, 1.0f, 1.0f);
+
+  // Set material color, Red
+  glColor3f(1.0f, 0.0f, 0.0f);
+
+  // Front Face ///////////////////////////////////
+  glBegin(GL_QUADS);
+    // Pointing straight out Z
+    glNormal3f(0.0f, 0.0f, 1.0f);	
+
+    // Left Panel
+    glVertex3f(-50.0f, 50.0f, fZ);
+    glVertex3f(-50.0f, -50.0f, fZ);
+    glVertex3f(-35.0f, -50.0f, fZ);
+    glVertex3f(-35.0f,50.0f,fZ);
+
+    // Right Panel
+    glVertex3f(50.0f, 50.0f, fZ);
+    glVertex3f(35.0f, 50.0f, fZ);
+    glVertex3f(35.0f, -50.0f, fZ);
+    glVertex3f(50.0f,-50.0f,fZ);
+
+    // Top Panel
+    glVertex3f(-35.0f, 50.0f, fZ);
+    glVertex3f(-35.0f, 35.0f, fZ);
+    glVertex3f(35.0f, 35.0f, fZ);
+    glVertex3f(35.0f, 50.0f,fZ);
+
+    // Bottom Panel
+    glVertex3f(-35.0f, -35.0f, fZ);
+    glVertex3f(-35.0f, -50.0f, fZ);
+    glVertex3f(35.0f, -50.0f, fZ);
+    glVertex3f(35.0f, -35.0f,fZ);
+
+    // Top length section ////////////////////////////
+    // Normal points up Y axis
+    glNormal3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(-50.0f, 50.0f, fZ);
+    glVertex3f(50.0f, 50.0f, fZ);
+    glVertex3f(50.0f, 50.0f, bZ);
+    glVertex3f(-50.0f,50.0f,bZ);
+		
+    // Bottom section
+    glNormal3f(0.0f, -1.0f, 0.0f);
+    glVertex3f(-50.0f, -50.0f, fZ);
+    glVertex3f(-50.0f, -50.0f, bZ);
+    glVertex3f(50.0f, -50.0f, bZ);
+    glVertex3f(50.0f, -50.0f, fZ);
+
+    // Left section
+    glNormal3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(50.0f, 50.0f, fZ);
+    glVertex3f(50.0f, -50.0f, fZ);
+    glVertex3f(50.0f, -50.0f, bZ);
+    glVertex3f(50.0f, 50.0f, bZ);
+
+    // Right Section
+    glNormal3f(-1.0f, 0.0f, 0.0f);
+    glVertex3f(-50.0f, 50.0f, fZ);
+    glVertex3f(-50.0f, 50.0f, bZ);
+    glVertex3f(-50.0f, -50.0f, bZ);
+    glVertex3f(-50.0f, -50.0f, fZ);
+  glEnd();
+
+  glFrontFace(GL_CW);		// clock-wise polygons face out
+
+  glBegin(GL_QUADS);
+    // Back section
+        // Pointing straight out Z
+        glNormal3f(0.0f, 0.0f, -1.0f);	
+
+        // Left Panel
+        glVertex3f(-50.0f, 50.0f, bZ);
+        glVertex3f(-50.0f, -50.0f, bZ);
+        glVertex3f(-35.0f, -50.0f, bZ);
+        glVertex3f(-35.0f,50.0f,bZ);
+
+        // Right Panel
+        glVertex3f(50.0f, 50.0f, bZ);
+        glVertex3f(35.0f, 50.0f, bZ);
+        glVertex3f(35.0f, -50.0f, bZ);
+        glVertex3f(50.0f,-50.0f,bZ);
+
+        // Top Panel
+        glVertex3f(-35.0f, 50.0f, bZ);
+        glVertex3f(-35.0f, 35.0f, bZ);
+        glVertex3f(35.0f, 35.0f, bZ);
+        glVertex3f(35.0f, 50.0f,bZ);
+
+        // Bottom Panel
+        glVertex3f(-35.0f, -35.0f, bZ);
+        glVertex3f(-35.0f, -50.0f, bZ);
+        glVertex3f(35.0f, -50.0f, bZ);
+        glVertex3f(35.0f, -35.0f,bZ);
+	
+        // Insides /////////////////////////////
+    	glColor3f(0.75f, 0.75f, 0.75f);
+
+        // Normal points up Y axis
+        glNormal3f(0.0f, 1.0f, 0.0f);
+        glVertex3f(-35.0f, 35.0f, fZ);
+        glVertex3f(35.0f, 35.0f, fZ);
+        glVertex3f(35.0f, 35.0f, bZ);
+        glVertex3f(-35.0f,35.0f,bZ);
+		
+        // Bottom section
+        glNormal3f(0.0f, 1.0f, 0.0f);
+        glVertex3f(-35.0f, -35.0f, fZ);
+        glVertex3f(-35.0f, -35.0f, bZ);
+        glVertex3f(35.0f, -35.0f, bZ);
+        glVertex3f(35.0f, -35.0f, fZ);
+
+        // Left section
+        glNormal3f(1.0f, 0.0f, 0.0f);
+        glVertex3f(-35.0f, 35.0f, fZ);
+        glVertex3f(-35.0f, 35.0f, bZ);
+        glVertex3f(-35.0f, -35.0f, bZ);
+        glVertex3f(-35.0f, -35.0f, fZ);
+
+        // Right Section
+        glNormal3f(-1.0f, 0.0f, 0.0f);
+        glVertex3f(35.0f, 35.0f, fZ);
+        glVertex3f(35.0f, -35.0f, fZ);
+        glVertex3f(35.0f, -35.0f, bZ);
+        glVertex3f(35.0f, 35.0f, bZ);
+    glEnd();
+
+    glFrontFace(GL_CCW);		// Counter clock-wise polygons face out
+  
   glPopMatrix();
 }
